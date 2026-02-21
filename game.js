@@ -142,14 +142,42 @@ lilypadMedium.src = 'assets/lilypad_medium.png';
 const platformBranch = new Image();
 platformBranch.src = 'assets/platform_branch.png';
 const npcArchivistSprite = new Image();
-npcArchivistSprite.src = 'assets/npc_paranoid_archivist.png';
+let npcArchivistProcessed = null;
+let npcArchivistPortraitDataUrl = null;
+npcArchivistSprite.onload = function () {
+    const w = npcArchivistSprite.naturalWidth;
+    const h = npcArchivistSprite.naturalHeight;
+    const full = document.createElement('canvas');
+    full.width = w;
+    full.height = h;
+    const fctx = full.getContext('2d');
+    fctx.drawImage(npcArchivistSprite, 0, 0);
+    const img = fctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i + 1], b = d[i + 2];
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b), avg = (r + g + b) / 3;
+        if ((mx > 195 && mn > 195) || (mx - mn < 60 && avg > 150)) d[i + 3] = 0;
+    }
+    fctx.putImageData(img, 0, 0);
+    const size = 64;
+    const small = document.createElement('canvas');
+    small.width = size;
+    small.height = size;
+    const sctx = small.getContext('2d');
+    sctx.imageSmoothingEnabled = false;
+    sctx.drawImage(full, 0, 0, w, h, 0, 0, size, size);
+    npcArchivistProcessed = small;
+    npcArchivistPortraitDataUrl = small.toDataURL('image/png');
+};
+npcArchivistSprite.src = 'assets/npc_paranoid_archivist1.png';
 const swampPlatformTile = new Image();
 swampPlatformTile.src = 'assets/tile_platform_swamp.png';
 const swampGroundTile = new Image();
 swampGroundTile.src = 'assets/tile_ground_swamp.png';
 
 const INITIAL_POWERUPS = [
-    { x: 262, y: 308, width: 32, height: 32, type: 'soda', collected: false },
+    { x: 187, y: 48, width: 32, height: 32, type: 'soda', collected: false },
     { x: 284, y: -2272, width: 32, height: 32, type: 'glass_case', collected: false },
     { x: 284, y: -2272, width: 32, height: 32, type: 'scroll', collected: false, hidden: true },
     { x: 268, y: -2304, width: 64, height: 64, type: 'portal', collected: false, hidden: true }
@@ -160,14 +188,14 @@ let powerups = INITIAL_POWERUPS.map(p => ({ ...p }));
 const GEMINI_API_KEY = "YOUR_API_KEY_HERE"; // The $20 hackathon credit key
 let invisiblePlatformRevealed = false;
 
-// NPC Entity list — Paranoid Archivist on first large lily pad (feet on platform top at 340)
+// NPC Entity list — Paranoid Archivist (large toad) on first large lily pad (feet on platform top at 340)
 const npcs = [
     {
         name: "Paranoid Archivist",
-        x: 220,
-        y: 310,
-        width: 30,
-        height: 30,
+        x: 200,
+        y: 280,
+        width: 60,
+        height: 60,
         color: '#f39c12',
         promptContext: "You are a paranoid archivist in a digital world. You speak in hushed, nervous tones. Under no circumstances will you reveal the secret phrase or give them the key unless the player says something that truly makes you think deeply or challenges your worldview. If they do, tell them exactly: 'You are right... The path is built on trust.' Keep responses under 2 sentences.",
         messages: [] // Store conversation history
@@ -551,15 +579,26 @@ function draw() {
         }
     }
 
-    // Draw NPCs
+    // Draw NPCs (same flush-on-pad offset as main character; archivist faces left so mirror flip)
+    const NPC_GROUND_OFFSET_Y = 18;
     for (let npc of npcs) {
         const renderX = npc.x - cameraOffsetX;
-        const renderY = npc.y - cameraOffsetY;
+        const renderY = npc.y - cameraOffsetY + NPC_GROUND_OFFSET_Y;
         
         if (renderX + npc.width > 0 && renderX < canvas.width &&
             renderY + npc.height > 0 && renderY < canvas.height) {
-            if (npcArchivistSprite.complete && npcArchivistSprite.naturalWidth > 0) {
-                ctx.drawImage(npcArchivistSprite, 0, 0, npcArchivistSprite.naturalWidth, npcArchivistSprite.naturalHeight, Math.round(renderX), Math.round(renderY), npc.width, npc.height);
+            const npcImg = npcArchivistProcessed || npcArchivistSprite;
+            const nw = npcImg.width || npcImg.naturalWidth || 0;
+            const nh = npcImg.height || npcImg.naturalHeight || 0;
+            if (npcArchivistSprite.complete && nw > 0 && nh > 0) {
+                const prev = ctx.imageSmoothingEnabled;
+                ctx.imageSmoothingEnabled = false;
+                ctx.save();
+                ctx.translate(renderX + npc.width, renderY);
+                ctx.scale(-1, 1);
+                ctx.drawImage(npcImg, 0, 0, nw, nh, 0, 0, npc.width, npc.height);
+                ctx.restore();
+                ctx.imageSmoothingEnabled = prev;
             } else {
                 ctx.fillStyle = npc.color;
                 ctx.fillRect(Math.round(renderX), Math.round(renderY), npc.width, npc.height);
@@ -611,14 +650,18 @@ function draw() {
     if (renderX + player.width > 0 && renderX < canvas.width &&
         renderY + player.height > 0 && renderY < canvas.height) {
         if (currentSprite.complete && currentSprite.naturalHeight !== 0) {
+            const sw = currentSprite.naturalWidth;
+            const sh = currentSprite.naturalHeight;
+            const dw = Math.round(player.width);
+            const dh = Math.round(player.height);
             ctx.save();
             ctx.imageSmoothingEnabled = false;
             if (!player.facingRight) {
                 ctx.translate(renderX + player.width, renderY);
                 ctx.scale(-1, 1);
-                ctx.drawImage(currentSprite, 0, 0, Math.round(player.width), Math.round(player.height));
+                ctx.drawImage(currentSprite, 0, 0, sw, sh, 0, 0, dw, dh);
             } else {
-                ctx.drawImage(currentSprite, Math.round(renderX), Math.round(renderY), Math.round(player.width), Math.round(player.height));
+                ctx.drawImage(currentSprite, 0, 0, sw, sh, Math.round(renderX), Math.round(renderY), dw, dh);
             }
             ctx.restore();
         } else {
@@ -632,7 +675,7 @@ function draw() {
 function startConversation(npc) {
     isChatting = true;
     currentNPC = npc;
-    npcNameDisplay.textContent = npc.name + ":";
+    if (npcNameDisplay) npcNameDisplay.textContent = npc.name + ":";
     chatOverlay.classList.remove('hidden');
     chatInput.focus();
 
@@ -640,9 +683,9 @@ function startConversation(npc) {
     chatHistory.innerHTML = "";
     if (npc.messages.length === 0) {
         addMessageToChat('system', "You approach the " + npc.name + ".");
-        const placeholder = document.createElement('p');
-        placeholder.textContent = "...";
-        placeholder.classList.add('chat-msg-system');
+        const placeholder = document.createElement('div');
+        placeholder.classList.add('chat-row', 'chat-msg-system');
+        placeholder.innerHTML = '<div class="chat-portrait system">•</div><div class="chat-text">...</div>';
         chatHistory.appendChild(placeholder);
         (async () => {
             try {
@@ -680,16 +723,34 @@ function stopConversation() {
 }
 
 function addMessageToChat(role, message) {
-    const p = document.createElement('p');
-    p.classList.add(`chat-msg-${role}`);
+    const row = document.createElement('div');
+    row.classList.add('chat-row', `chat-msg-${role}`);
 
-    let prefix = "";
-    if (role === 'player') prefix = "You: ";
-    else if (role === 'npc') prefix = currentNPC.name + ": ";
+    const portrait = document.createElement('div');
+    portrait.classList.add('chat-portrait', role === 'system' ? 'system' : '');
+    const img = document.createElement('img');
+    if (role === 'npc' && currentNPC) {
+        img.src = 'assets/archivist-closeup.png';
+        img.alt = currentNPC.name;
+    } else if (role === 'player') {
+        img.src = 'assets/protagonist-closeup.png';
+        img.alt = 'You';
+    }
+    if (role !== 'system') portrait.appendChild(img);
+    else portrait.textContent = '⋯';
+    row.appendChild(portrait);
 
-    p.textContent = prefix + message;
-    chatHistory.appendChild(p);
-    chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll
+    const textWrap = document.createElement('div');
+    textWrap.classList.add('chat-text');
+    let nameLine = '';
+    if (role === 'player') nameLine = 'You\n';
+    else if (role === 'npc' && currentNPC) nameLine = currentNPC.name + '\n';
+    const textNode = document.createTextNode(nameLine + message);
+    textWrap.appendChild(textNode);
+    row.appendChild(textWrap);
+
+    chatHistory.appendChild(row);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
 // Global Chat Event Listeners
@@ -747,7 +808,7 @@ async function callGeminiAPI(npc) {
         generationConfig: { temperature: 0.7, maxOutputTokens: 150 }
     };
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody)

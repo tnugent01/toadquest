@@ -10,13 +10,17 @@ def remove_background(image_path):
     # Also strip any near-white (gets rid of white space everywhere)
     white_thresh = 240
     for item in datas:
+        r, g, b = item[0], item[1], item[2]
         is_bg = (
-            abs(item[0] - bg_color[0]) <= tolerance and
-            abs(item[1] - bg_color[1]) <= tolerance and
-            abs(item[2] - bg_color[2]) <= tolerance
+            abs(r - bg_color[0]) <= tolerance and
+            abs(g - bg_color[1]) <= tolerance and
+            abs(b - bg_color[2]) <= tolerance
         )
-        is_white = item[0] >= white_thresh and item[1] >= white_thresh and item[2] >= white_thresh
-        if is_bg or is_white:
+        is_white = r >= white_thresh and g >= white_thresh and b >= white_thresh
+        # Strip light grey (uniform, bright) as well
+        mx, mn = max(r, g, b), min(r, g, b)
+        is_light_grey = (mx - mn <= 40) and ((r + g + b) / 3 >= 180)
+        if is_bg or is_white or is_light_grey:
             new_data.append((255, 255, 255, 0))
         else:
             new_data.append(item)
@@ -37,6 +41,7 @@ items = [
     "item_glass_case.png",
     "item_key.png",
     "item_toad_cider.png",
+    "npc_paranoid_archivist1.png",
     "lilypad_large.png",
     "lilypad_medium.png",
     "platform_branch.png",

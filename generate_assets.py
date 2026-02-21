@@ -50,7 +50,7 @@ if __name__ == "__main__":
         "item_glass_case": "A high-quality transparent 32x32 pixel art sprite of a sturdy, transparent glass display case or pedestal with a wooden base, empty inside. Perfect retro 8-bit style platformer game asset, isolated on transparent background.",
         "item_key": "A high-quality transparent 32x32 pixel art sprite of a shiny golden antique skeleton key. Perfect retro 8-bit style platformer game asset, isolated on transparent background.",
         "item_toad_cider": "A high-quality transparent 32x32 pixel art sprite of an awesome retro aluminum soda can with a golden frog logo on it. Perfect retro 8-bit style platformer game asset, isolated on transparent background.",
-        "npc_paranoid_archivist": "A single realistic frog character sprite, natural and lifelike (not cartoon). A frog wearing a dark hooded cloak and a small goatee; same body shape and proportions as a companion toad, muted olive or brown tones. Standing idle, slightly hunched, cautious. Photorealistic or semi-realistic style, no cartoon, no pixel art. Isolated on fully transparent background, suitable for a small game character.",
+        "npc_paranoid_archivist": "A pixel art sprite of a realistic-looking pink toad in a low crouching posture, squatting on the ground. Same pose as a platformer hero toad: compact, ready to spring. Wearing a dark hooded cloak and a small goatee. 32x32 pixel art, clean pixels, sharp edges. Fully transparent background only — no white, no grey, no solid background of any kind. Character isolated on pure transparency. Retro 2D game NPC.",
     }
 
     # Swamp / froggy world — continuously VERTICAL game: big lily pads at start, vertically expansive

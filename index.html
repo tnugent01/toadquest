@@ -16,14 +16,15 @@
                 <canvas id="gameCanvas" width="800" height="450"></canvas>
             </div>
 
-            <!-- NPC Chat Overlay -->
+            <!-- JRPG-style dialogue overlay -->
             <div id="chat-overlay" class="hidden">
-                <div id="chat-history"></div>
-                <div class="chat-input-area">
-                    <span id="npc-name">NPC:</span>
-                    <input type="text" id="chat-input" placeholder="Type your message here..." autocomplete="off">
-                    <button id="chat-send">Send</button>
-                    <button id="chat-close">Leave</button>
+                <div id="chat-dialogue-box">
+                    <div id="chat-history"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off">
+                        <button type="button" id="chat-send">Send</button>
+                        <button type="button" id="chat-close">Leave</button>
+                    </div>
                 </div>
             </div>
         </div>
