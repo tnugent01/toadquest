@@ -8,7 +8,7 @@ import requests
 from google import genai
 from google.genai import types
 
-API_KEY = "YOUR_API_KEY_HERE"
+API_KEY = "YOUR_API_KEY_HERE" # <--- CAUTION: Plug your own Gemini API key in here
 client = genai.Client(api_key=API_KEY)
 os.makedirs("assets", exist_ok=True)
 

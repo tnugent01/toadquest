@@ -3,7 +3,7 @@ import os
 from google import genai
 
 # Ensure your GEMINI_API_KEY environment variable is set to your Hackathon API key.
-API_KEY = "YOUR_API_KEY_HERE"
+API_KEY = "YOUR_API_KEY_HERE" # <--- CAUTION: Plug your own Gemini API key in here
 client = genai.Client(api_key=API_KEY)
 
 def generate_sprite(prompt, filename, aspect_ratio="1:1"):

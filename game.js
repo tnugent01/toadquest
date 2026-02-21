@@ -202,7 +202,7 @@ const INITIAL_POWERUPS = [
 let powerups = INITIAL_POWERUPS.map(p => ({ ...p }));
 
 // --- API Setup & Global State ---
-const GEMINI_API_KEY = "YOUR_API_KEY_HERE"; // The $20 hackathon credit key
+const GEMINI_API_KEY = "YOUR_API_KEY_HERE"; // <--- CAUTION: Plug your own Gemini API key in here
 let invisiblePlatformRevealed = false;
 let levelCleared = false;
 
