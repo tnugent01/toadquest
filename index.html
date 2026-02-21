@@ -11,9 +11,10 @@
 <body>
     <div id="game-container">
         <h1>Quest for the Sacred Scrolls</h1>
-        <div id="canvas-wrapper" style="position: relative; display: inline-block;">
-            <!-- A 16:9 aspect ratio resolution popular in retro games -->
-            <canvas id="gameCanvas" width="800" height="450"></canvas>
+        <div id="canvas-wrapper">
+            <div id="canvas-inner">
+                <canvas id="gameCanvas" width="800" height="450"></canvas>
+            </div>
 
             <!-- NPC Chat Overlay -->
             <div id="chat-overlay" class="hidden">
@@ -26,9 +27,9 @@
                 </div>
             </div>
         </div>
-        <p class="instructions">Controls: ← → to Move | ↑ or Space to Jump | E to Interact</p>
+        <p class="instructions">Controls: ← → Move | ↑ or Space Jump | E Interact | R Reset</p>
     </div>
-    <script src="game.js"></script>
+    <script src="game.js?v=3"></script>
 </body>
 
 </html>
