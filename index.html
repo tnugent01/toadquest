@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest for the Sacred Scrolls</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <h1>Quest for the Sacred Scrolls</h1>
+        <div id="canvas-wrapper" style="position: relative; display: inline-block;">
+            <!-- A 16:9 aspect ratio resolution popular in retro games -->
+            <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+            <!-- NPC Chat Overlay -->
+            <div id="chat-overlay" class="hidden">
+                <div id="chat-history"></div>
+                <div class="chat-input-area">
+                    <span id="npc-name">NPC:</span>
+                    <input type="text" id="chat-input" placeholder="Type your message here..." autocomplete="off">
+                    <button id="chat-send">Send</button>
+                    <button id="chat-close">Leave</button>
+                </div>
+            </div>
+        </div>
+        <p class="instructions">Controls: ← → to Move | ↑ or Space to Jump | E to Interact</p>
+    </div>
+    <script src="game.js"></script>
+</body>
+
+</html>
